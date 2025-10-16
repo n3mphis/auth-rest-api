@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -38,5 +41,13 @@ public class UserService implements UserDetailsService {
                 .password(user.getPassword())
                 .roles(user.getRole().name())
                 .build();
+    }
+
+    public List<User> encontrarTodosLosUsuarios() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> buscarUsuarioPorEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }
