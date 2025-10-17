@@ -24,7 +24,7 @@ public class SuperAdminService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
-        Role adminRole = roleRepository.findByName(RoleName.ADMIN)
+        Role adminRole = roleRepository.findByNombre(RoleName.ADMIN)
                 .orElseThrow(() -> new RuntimeException("Error: Rol 'ADMIN' no encontrado"));
 
         user.setRole(adminRole);

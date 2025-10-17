@@ -1,5 +1,6 @@
 package com.n3mphis.auth_rest_api.service;
 
+import com.n3mphis.auth_rest_api.dto.UserResponseDTO;
 import com.n3mphis.auth_rest_api.model.Role;
 import com.n3mphis.auth_rest_api.model.RoleName;
 import com.n3mphis.auth_rest_api.model.User;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -34,7 +36,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncriptada);
 
         if (user.getRole() == null) {
-            Role rolUsuario = roleRepository.findByName(RoleName.USER)
+            Role rolUsuario = roleRepository.findByNombre(RoleName.USER)
                     .orElseThrow(() -> new RuntimeException("Error: Rol USER no encontrado"));
             user.setRole(rolUsuario);
         }
@@ -46,15 +48,26 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con mail: " + email));
 
+        String roleName = user.getRole().getNombre().name();
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole().name())
+                .roles(roleName)
                 .build();
     }
 
-    public List<User> encontrarTodosLosUsuarios() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> encontrarTodosLosUsuarios() {
+        return userRepository.findAll().stream()
+                .map(this::convertirAdto)
+                .collect(Collectors.toList());
+    }
+
+    private UserResponseDTO convertirAdto(User user) {
+        return new UserResponseDTO(
+                user.getEmail(),
+                user.getId(),
+                user.getRole().getNombre()
+        );
     }
 
     public Optional<User> buscarUsuarioPorEmail(String email) {

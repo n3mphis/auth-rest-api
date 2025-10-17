@@ -20,7 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/registrar").permitAll()
                         .requestMatchers("/superAdmin").hasRole("SUPER_ADMIN")
                         .anyRequest().authenticated());
 
